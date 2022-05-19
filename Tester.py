@@ -7,9 +7,14 @@ def split_by_period():
     delimiters = '.!?'
     lines = list()
     novel = open('houn.txt', 'r')
+    chapter = 'CHAPTER'  # TODO need regex to detect the word CHAPTER and roman number preceding it
 
     for i in range(15):  # TODO must parse entire file
         next_line = novel.readline().rstrip('\n')
+        next_line = next_line.lstrip(' ')
+        if next_line == '':
+            continue
+
         lines.append(next_line)
 
     novel.close()
