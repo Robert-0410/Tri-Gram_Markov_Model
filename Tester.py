@@ -7,19 +7,26 @@ def split_by_period():
     delimiters = '.!?'
     lines = list()
     novel = open('houn.txt', 'r')
-    chapter = 'CHAPTER'  # TODO need regex to detect the word CHAPTER and roman number preceding it
+    chapter = 'CHAPTER'
 
-    for i in range(15):  # TODO must parse entire file
+    # skip over title and arthur
+    for i in range(4):
+        novel.readline()
+
+    for i in range(300):  # TODO must parse entire file
         next_line = novel.readline().rstrip('\n')
         next_line = next_line.lstrip(' ')
         if next_line == '':
+            continue
+        if chapter in next_line:
+            novel.readline()
             continue
 
         lines.append(next_line)
 
     novel.close()
     print(lines)
-    return 0  # TODO temp return
+    # TODO clean and lowercase all into the list
 
 
 # removes punctuation from an input sentence
