@@ -39,4 +39,9 @@ def remove_punctuation(sentence: str):
     return sentence
 
 
+# updates list so that each index is an entire sentence TODO implement
+def make_lines_based_on_periods(the_list: list):
+    return 0
+
+
 split_by_period()
