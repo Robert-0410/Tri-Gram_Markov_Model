@@ -69,6 +69,7 @@ def remove_punctuation(sentence: str):
     return sentence
 
 
+# Current entry point for the program
 def prepare_sentences():
     initial_list = read_strip_lowercase_lines()
     intermediate_sentences = make_lines_based_on_periods(initial_list)
@@ -77,9 +78,5 @@ def prepare_sentences():
 
 
 # running the program, the proceeding block of code may be held in write_me_a_story_myAI()
-sentences = prepare_sentences()
-print(sentences)
-
-#  test_list = {"hello my friend. how are you doing? are you ok! why you scared", ", you will be ok. do not be scared."}
-#  test_output = make_lines_based_on_periods(test_list)
-#  print(test_output)
+#  sentences = prepare_sentences()
+#  print(sentences)
