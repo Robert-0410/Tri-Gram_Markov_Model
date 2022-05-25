@@ -15,8 +15,8 @@ class Node:
     def count(self):
         self.count += 1
 
-    def add_second_list(self):
-        setattr(self, "linked_list", LinkedWords())
+    def add_layer2(self):
+        setattr(self, "layer2", LinkedWords())
 
 
 # LinkedList for the words in the Tri-gram
@@ -87,20 +87,36 @@ for sentence in test_list:
             # layer refers to the linked lists
             layer1 = table.get(current_key)
             response = layer1.search(word1)
-            # word is found
+            # word is found, go into layer 2
             if response[0]:
-                print(response[1].data, " was found")
+                print(response[1].data, " was found need to increment")
+                response2 = response[1].layer2.search(word2)
+                # word2 is found in layer 2
+                if response2[0]:
+                    print("increment respective layer 2 node")
+                # word2 not found in layer 2
+                else:
+                    response[1].layer2.add_node(Node(word2))
             # word is not found
             else:
+                node = Node(word1)
+                node.add_layer2()
+                node.layer2.add_node(Node(word2))
                 layer1.add_node(Node(word1))
+
 
         # if key does not exist, add as key and start layer 1 linked list
         else:
             # TODO continue with layer 2
             layer1 = LinkedWords()
             node = Node(word1)
+            node.add_layer2()
+            # add W_i to layer 2
+            node.layer2.add_node(Node(word2))
             layer1.add_node(node)
             table[current_key] = layer1
+
+
 
 print("Table size: ", len(table))
 for key in table:
