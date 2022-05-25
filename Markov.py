@@ -4,6 +4,7 @@
 # where p1 is W_i-1
 #       p2 is W_i
 class Node:
+    # constructor
     def __init__(self, word: str):
         self.data = word
         self.next = None
