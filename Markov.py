@@ -8,6 +8,7 @@ class Node:
     def __init__(self, word: str):
         self.data = word
         self.next = None
+        self.layer2 = None
         self.count = 0
 
     def __eq__(self, other):
@@ -17,6 +18,7 @@ class Node:
         self.count += 1
 
     def add_layer2(self):
+        self.layer2 = LinkedWords()
         setattr(self, "layer2", LinkedWords())
 
 
@@ -105,7 +107,7 @@ for sentence in test_list:
                 node = Node(word1)
                 node.add_layer2()
                 node.layer2.add_node(Node(word2))
-                layer1.add_node(Node(word1))
+                layer1.add_node(node)
 
         # if key does not exist, add as key and start layer 1 linked list
         else:
