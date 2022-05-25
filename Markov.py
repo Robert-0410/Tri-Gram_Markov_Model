@@ -90,7 +90,9 @@ for sentence in test_list:
             # word is found, go into layer 2
             if response[0]:
                 print(response[1].data, " was found need to increment")
-                response2 = response[1].layer2.search(word2)
+                layer2 = response[1].layer2
+
+                response2 = layer2.search(word2)
                 # word2 is found in layer 2
                 if response2[0]:
                     print("increment respective layer 2 node")
@@ -104,7 +106,6 @@ for sentence in test_list:
                 node.layer2.add_node(Node(word2))
                 layer1.add_node(Node(word1))
 
-
         # if key does not exist, add as key and start layer 1 linked list
         else:
             # TODO continue with layer 2
@@ -115,8 +116,6 @@ for sentence in test_list:
             node.layer2.add_node(Node(word2))
             layer1.add_node(node)
             table[current_key] = layer1
-
-
 
 print("Table size: ", len(table))
 for key in table:
