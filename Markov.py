@@ -4,38 +4,65 @@
 # where p1 is W_i-1
 #       p2 is W_i
 class Word:
+    # TODO orient so that only certain values are allocated when in p2
     def __init__(self, word: str):
         self.word_data = word
-        self.next_word1 = None  # other word that comes after the key/hashed
-        self.next_word2 = None  # proceeding in a sentence
-        self.is_i = False  # determines if 3rd word or position 2
+        self.next_word1 = None  # other word that comes after the key/hashed TODO this can reference next in column for both
+        self.next_word2 = None  # proceeding in a sentence TODO only needed for p1
+        self.word2_tail = None  # TODO only needed for p1
+        self.is_i = False  # determines if 3rd word or position 2 TODO only needed for p2
+        self.count = 0  # TODO only needed for p2
 
     def __eq__(self, other):
         return self.word_data == other.word_data
 
-    # TODO delete if obsolete
-    def add_word2(self, word2):
-        self.next_word2 = word2
-        self.next_word2.is_i = True
 
-
+# LinkedList for the words in the Tri-gram
 class LinkedWords:
     def __init__(self):
+        # head to list in W_i-1
         self.head = None
-        self.tail = None
+        # tail to list in W_i-1
+        self.tail = None  # TODO delete if obsolete
 
     def add_word1(self, word1: Word):
-        return 0  # temp
+        # empty list case
+        if self.head is None and self.tail is None:  # TODO try removing self.tail to see if change in behavior
+            self.head = word1
+            self.tail = word1
+        else:
+            current = self.tail
+            self.tail = word1
+            current.next_word1 = word1
 
-    # TODO this works for w1, refactor and make new onw for w2
-    def search(self, word: Word):
+    def add_word2(self, word1: Word, word2: Word):
+        if word1.next_word2 is None and word1.word2_tail is None:
+            word1.next_word2 = word2
+            word1.word2_tail = word2
+        else:
+            current = word1.word2_tail
+            word1.word2_tail = word2
+            current.next_word2 = word2
+
+    # Searches the linked list in the W_i-1 position TODO return tuple with [boolean, Node]
+    def search_w1(self, word: Word):
         current = self.head
 
         while current is not None:
             if current == word:
-                return True
+                return [True, current]
             current = current.next_word1
-        return False
+        return [False, None]
+
+    # Searches the linked list in the W_i position
+    def search_w2(self, word: Word):
+        current = self.head.next_word2
+
+        while current is not None:
+            if current == word:
+                return [True, current]
+            current = current.next_word2
+        return [False, None]
 
 
 # Tri-Gram Markov Model that helps AI create a new story
@@ -81,4 +108,3 @@ for sentence in test_list:
             w_1 = Word(s_to_list[i + 1])
             w_1.add_word2(Word(s_to_list[i + 2]))
             the_dictionary[current_word] = LinkedWords(w_1)
-
