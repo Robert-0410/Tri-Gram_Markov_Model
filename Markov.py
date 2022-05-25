@@ -3,108 +3,106 @@
 # Node representation of a word
 # where p1 is W_i-1
 #       p2 is W_i
-class Word:
-    # TODO orient so that only certain values are allocated when in p2
+class Node:
     def __init__(self, word: str):
-        self.word_data = word
-        self.next_word1 = None  # other word that comes after the key/hashed TODO this can reference next in column for both
-        self.next_word2 = None  # proceeding in a sentence TODO only needed for p1
-        self.word2_tail = None  # TODO only needed for p1
-        self.is_i = False  # determines if 3rd word or position 2 TODO only needed for p2
-        self.count = 0  # TODO only needed for p2
+        self.data = word
+        self.next = None
+        self.count = 0
 
     def __eq__(self, other):
-        return self.word_data == other.word_data
+        return self.data == other
+
+    def count(self):
+        self.count += 1
+
+    def add_second_list(self):
+        setattr(self, "linked_list", LinkedWords())
 
 
 # LinkedList for the words in the Tri-gram
 class LinkedWords:
     def __init__(self):
-        # head to list in W_i-1
         self.head = None
-        # tail to list in W_i-1
-        self.tail = None  # TODO delete if obsolete
+        self.tail = None
 
-    def add_word1(self, word1: Word):
+    def add_node(self, node: Node):
         # empty list case
-        if self.head is None and self.tail is None:  # TODO try removing self.tail to see if change in behavior
-            self.head = word1
-            self.tail = word1
+        if self.head is None:
+            self.head = node
+            self.tail = node
         else:
             current = self.tail
-            self.tail = word1
-            current.next_word1 = word1
+            self.tail = node
+            current.next = node
 
-    def add_word2(self, word1: Word, word2: Word):
-        if word1.next_word2 is None and word1.word2_tail is None:
-            word1.next_word2 = word2
-            word1.word2_tail = word2
-        else:
-            current = word1.word2_tail
-            word1.word2_tail = word2
-            current.next_word2 = word2
-
-    # Searches the linked list in the W_i-1 position TODO return tuple with [boolean, Node]
-    def search_w1(self, word: Word):
+    # Searches the linked list for specified Node
+    def search(self, word: str):
         current = self.head
-
         while current is not None:
             if current == word:
                 return [True, current]
-            current = current.next_word1
+            current = current.next
         return [False, None]
 
-    # Searches the linked list in the W_i position
-    def search_w2(self, word: Word):
-        current = self.head.next_word2
-
+    def to_string(self):
+        current = self.head
         while current is not None:
-            if current == word:
-                return [True, current]
-            current = current.next_word2
-        return [False, None]
+            print(current.data, end=" ")
+            current = current.next
 
 
-# Tri-Gram Markov Model that helps AI create a new story
+# Tri-Gram Markov Model that helps a simple AI create a new story
 class MarkovModel:
     def __init__(self):
-        dictionary = dict()
+        self.hash_table = dict()
 
 
 # ---------------Code below is for testing and experimenting-------------------------
 
 
-# TODO implement the data structure
-s1 = "this is a test sentence from a document"
-s2 = "an other sentence my friend"
-s3 = "an other of you will also have to leave"
-s4 = "this quarter has been rough"
-s5 = "but its almost over and i will graduate"
+def test_sentences():
+    s1 = "this is a test sentence from a document"
+    s2 = "an other sentence my friend"
+    s3 = "an other of you will also have to leave"
+    s4 = "this quarter has an an been rough a rough sentence my ninja"
+    s5 = "but its almost over and i will graduate"
+    output = [s1, s2, s3, s4, s5]
+    return output
 
-test_list = [s1, s2, s3, s4, s5]
-# TODO function that uses the below function to create the hash table, should take in a list of sentences
+
+test_list = test_sentences()
+
+# TODO idea: function that uses the below function to create the hash table, should take in a list of sentences
 # takes a sentence and hashes TODO: prevents sentence under size 3
-the_dictionary = dict()
+table = dict()
 for sentence in test_list:
-    s_to_list = sentence.split()
-    for i in range(len(s_to_list) - 2):  # minus 2 prevents index out of bounce
-        current_word = s_to_list[i]
+    # TODO idea: can have a function doing this work when taking a sentence as input
+    s_list = sentence.split()
+    for i in range(len(s_list) - 2):  # minus 2 prevents index out of bounce
+        current_key = s_list[i]
+        word1 = s_list[i + 1]
+        word2 = s_list[i + 2]
         # if key exist, update the linked list
-        if current_word in the_dictionary:
-            current_list = the_dictionary.get(current_word)
-            next_word = s_to_list[i + 1]
-            if next_word == current_list.head.word_data:
-                next_word2 = s_to_list[i + 2]
-                # need to add next_word2 as link or increase count of occurrence
-                if next_word2 == current_list.head.next_word2.word_data:
-                    print("increase count")
-                else:
-                    print("move to next p2")
+        if current_key in table:
+            # layer refers to the linked lists
+            layer1 = table.get(current_key)
+            response = layer1.search(word1)
+            # word is found
+            if response[0]:
+                print(response[1].data, " was found")
+            # word is not found
             else:
-                print("move to next p1")  # TODO might have to do function that finds nodes or doesnt
+                layer1.add_node(Node(word1))
 
-        # if it does not exist, add as key and update linked list
+        # if key does not exist, add as key and start layer 1 linked list
         else:
-            w_1 = Word(s_to_list[i + 1])
-            w_1.add_word2(Word(s_to_list[i + 2]))
-            the_dictionary[current_word] = LinkedWords(w_1)
+            # TODO continue with layer 2
+            layer1 = LinkedWords()
+            node = Node(word1)
+            layer1.add_node(node)
+            table[current_key] = layer1
+
+print("Table size: ", len(table))
+for key in table:
+    print("The key: ", key, ": ", end=" ")
+    print(table.get(key).to_string())
