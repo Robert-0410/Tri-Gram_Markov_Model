@@ -18,7 +18,7 @@ class Node:
         self.count += 1
 
     def add_layer2(self):
-        self.layer2 = LinkedWords()
+        #self.layer2 = LinkedWords()
         setattr(self, "layer2", LinkedWords())
 
 
@@ -46,6 +46,19 @@ class LinkedWords:
                 return [True, current]
             current = current.next
         return [False, None]
+
+    # Searches for highest probable word in either the bi-gram or tri-gram
+    def search_max(self):
+        current = self.head
+        max_count = 0
+        output = None
+        while current is not None:
+            current_count = current.count
+            if max_count < current_count:
+                output = current
+                max_count = current_count
+            current = current.next
+        return output
 
     def to_string(self):
         current = self.head
@@ -85,13 +98,17 @@ class MarkovModel:
                         response2[1].count_word()
                     # word2 not found in layer 2
                     else:
-                        response[1].layer2.add_node(Node(word2).count_word())
+                        layer2_node = Node(word2)
+                        layer2_node.count_word()
+                        response[1].layer2.add_node(layer2_node)
                 # word is not found
                 else:
                     node = Node(word1)
                     node.count_word()
                     node.add_layer2()
-                    node.layer2.add_node(Node(word2).count_word())
+                    layer2_node = Node(word2)
+                    layer2_node.count_word()
+                    node.layer2.add_node(layer2_node)
                     layer1.add_node(node)
 
             # if key does not exist, add as key and start layer 1 linked list
@@ -101,7 +118,9 @@ class MarkovModel:
                 node.count_word()
                 node.add_layer2()
                 # add W_i to layer 2
-                node.layer2.add_node(Node(word2).count_word())
+                layer2_node = Node(word2)
+                layer2_node.count_word()
+                node.layer2.add_node(layer2_node)
                 layer1.add_node(node)
                 self.hash_table[current_key] = layer1
 
@@ -115,9 +134,9 @@ class MarkovModel:
 
 def test_sentences():
     s1 = "this is a test sentence from a document"
-    s2 = "an other sentence my friend"
-    s3 = "an other of you will also have to leave"
-    s4 = "this quarter has an an been rough a rough sentence my ninja"
+    s2 = "an other sentence my friend, an other sentence"
+    s3 = "an other of you will hello young ninja how are you doing also have to leave"
+    s4 = "this quarter an other sentence has an an been rough a rough sentence my ninja"
     s5 = "but its almost over and i will graduate"
     output = [s1, s2, s3, s4, s5]
     return output
@@ -130,3 +149,17 @@ story_teller.train_markov_model(test_list)
 for key in story_teller.hash_table:
     print("The key: ", key, ": ", end=" ")
     print(story_teller.hash_table.get(key).to_string())
+
+# TODO code below is for starting to build the new story, each block will be a method for MarkovModel
+# TODO method to get two words, should run 6 times to get 12 words per line
+bi_gram = story_teller.hash_table.get("hello") # the key will come in from the method argument
+max1 = bi_gram.search_max()
+tri_gram = max1.layer2
+max2 = tri_gram.search_max()
+output_list = list()
+output_list.append(max1.data)
+output_list.append(max2.data)
+output = " ".join(output_list)
+print("Hello", output)
+
+# TODO method
