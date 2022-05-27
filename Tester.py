@@ -5,9 +5,9 @@
 from Markov import MarkovModel
 
 
-def read_strip_lowercase_lines():
+def read_strip_lowercase_lines(file_name: str):
     lines = list()
-    novel = open('houn.txt', 'r')
+    novel = open(file_name, 'r')
     chapter = 'CHAPTER'
 
     # skip over title and arthur
@@ -73,8 +73,8 @@ def remove_punctuation(sentence: str):
 
 
 # Current entry point for the program
-def prepare_sentences():
-    initial_list = read_strip_lowercase_lines()  # TODO pass string with file name
+def prepare_sentences(file_name: str):
+    initial_list = read_strip_lowercase_lines(file_name)  # TODO pass string with file name
     intermediate_sentences = make_lines_based_on_periods(initial_list)
     output = clean_punctuation(intermediate_sentences)
     return output
@@ -83,11 +83,17 @@ def prepare_sentences():
 # main entry point for the program
 def run():
     # Collect data
-    novel1 = prepare_sentences()
+    novel1 = prepare_sentences("houn.txt")
+    novel2 = prepare_sentences("sign.txt")
+    novel3 = prepare_sentences("stud.txt")
+    novel4 = prepare_sentences("vall.txt")
 
     # Train AI
     writer = MarkovModel()
     writer.train_markov_model(novel1)
+    writer.train_markov_model(novel2)
+    writer.train_markov_model(novel3)
+    writer.train_markov_model(novel4)
 
     # Write story to file
     writer.build_new_story("late")
