@@ -2,6 +2,9 @@
 
 
 # Split sentences by period and returns a list with all the sentences
+from Markov import MarkovModel
+
+
 def read_strip_lowercase_lines():
     lines = list()
     novel = open('houn.txt', 'r')
@@ -71,12 +74,28 @@ def remove_punctuation(sentence: str):
 
 # Current entry point for the program
 def prepare_sentences():
-    initial_list = read_strip_lowercase_lines()
+    initial_list = read_strip_lowercase_lines()  # TODO pass string with file name
     intermediate_sentences = make_lines_based_on_periods(initial_list)
     output = clean_punctuation(intermediate_sentences)
     return output
 
 
+# main entry point for the program
+def run():
+    # Collect data
+    novel1 = prepare_sentences()
+
+    # Train AI
+    writer = MarkovModel()
+    writer.train_markov_model(novel1)
+
+    # Write story to file
+    writer.build_new_story("late")
+
+    print(writer.story)
+    print(len(writer.story))
+
 # running the program, the proceeding block of code may be held in write_me_a_story_myAI()
 #  sentences = prepare_sentences()
 #  print(sentences)
+run()

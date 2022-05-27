@@ -18,7 +18,7 @@ class Node:
         self.count += 1
 
     def add_layer2(self):
-        #self.layer2 = LinkedWords()
+        # self.layer2 = LinkedWords()
         setattr(self, "layer2", LinkedWords())
 
 
@@ -74,6 +74,7 @@ class LinkedWords:
 class MarkovModel:
     def __init__(self):
         self.hash_table = dict()
+        self.story = list()
 
     def process_sentence(self, sentence: str):
         s_list = sentence.split()
@@ -124,9 +125,38 @@ class MarkovModel:
                 layer1.add_node(node)
                 self.hash_table[current_key] = layer1
 
+    # trains AI to learn common words that can go together from the input data set
     def train_markov_model(self, sentences: list):
         for sentence in sentences:
             self.process_sentence(sentence)
+
+    # TODO method to get two words, should run 6 times to get 12 words per line
+    def build_new_sentence(self, word: str):
+        bi_gram = self.hash_table.get(word)  # the key will come in from the method argument
+        output_list = list()
+        #  output_list.append(word)
+        for i in range(12):
+            max1 = bi_gram.search_max()
+            tri_gram = max1.layer2
+            max2 = tri_gram.search_max()
+            output_list.append(max1.data)
+            output_list.append(max2.data)
+            if max2 is None:
+                print("max2 is None")
+                break
+            bi_gram = self.hash_table.get(max2.data)  # TODO might have issues here if the word max2 is not a key
+        output = " ".join(output_list)
+        self.story.append(output)
+        return max2.data
+
+    # TODO method that writes story to a file, appends the chosen first word to the beginning
+
+    # TODO Builds the entire story consisting of 2000 words.
+    def build_new_story(self, first_word):
+        next_word = first_word
+        for i in range(167):
+            next_word = self.build_new_sentence(next_word)
+        # TODO call method to write to Readme.txt
 
 
 # ---------------Code below is for testing and experimenting-------------------------
@@ -149,17 +179,3 @@ story_teller.train_markov_model(test_list)
 for key in story_teller.hash_table:
     print("The key: ", key, ": ", end=" ")
     print(story_teller.hash_table.get(key).to_string())
-
-# TODO code below is for starting to build the new story, each block will be a method for MarkovModel
-# TODO method to get two words, should run 6 times to get 12 words per line
-bi_gram = story_teller.hash_table.get("hello") # the key will come in from the method argument
-max1 = bi_gram.search_max()
-tri_gram = max1.layer2
-max2 = tri_gram.search_max()
-output_list = list()
-output_list.append(max1.data)
-output_list.append(max2.data)
-output = " ".join(output_list)
-print("Hello", output)
-
-# TODO method
