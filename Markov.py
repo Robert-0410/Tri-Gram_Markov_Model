@@ -28,6 +28,7 @@ class Node:
 # LinkedList for the words in the Tri-gram
 class LinkedWords:
     def __init__(self):
+        # TODO might have a counter to keep track of occurrences
         self.head = None
         self.tail = None
 
@@ -150,9 +151,8 @@ class MarkovModel:
             output_list.append(max2.data)
             output_list.append("_____")
 
-            # if max2 == "the" or max2 == "a" or max2 == "his" or max2 == "had" or max2 == "time" or max2 == "again"
-            # and max2 is not None:
-            if max2 is None:
+            if max2 == "the" or max2 == "a" or max2 == "his" or max2 == "had" or max2 == "time" or max2 == "again"and max2 is None:
+            #if max2 is None:
                 bi_gram = self.hash_table.get(choose_random_word(self.raw_sentences))
             else:
                 bi_gram = self.hash_table.get(max2.data)  # TODO might have issues here if the word max2 is not a key
