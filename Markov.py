@@ -1,3 +1,6 @@
+import random
+
+
 # Implements the hash table/linked structure
 
 # Node representation of a word
@@ -74,6 +77,7 @@ class LinkedWords:
 class MarkovModel:
     def __init__(self):
         self.hash_table = dict()
+        self.raw_sentences = list()
         self.story = list()
 
     def process_sentence(self, sentence: str):
@@ -127,36 +131,53 @@ class MarkovModel:
 
     # trains AI to learn common words that can go together from the input data set
     def train_markov_model(self, sentences: list):
+        self.raw_sentences.extend(sentences)
         for sentence in sentences:
             self.process_sentence(sentence)
 
-    # TODO method to get two words, should run 6 times to get 12 words per line
     def build_new_sentence(self, word: str):
         bi_gram = self.hash_table.get(word)  # the key will come in from the method argument
         output_list = list()
         #  output_list.append(word)
-        for i in range(12):
+        for i in range(1000):
+            # if max2 is None:
+            #   print("max2 is None")
+            #  break
             max1 = bi_gram.search_max()
             tri_gram = max1.layer2
             max2 = tri_gram.search_max()
             output_list.append(max1.data)
             output_list.append(max2.data)
+            output_list.append("_____")
+
+            # if max2 == "the" or max2 == "a" or max2 == "his" or max2 == "had" or max2 == "time" or max2 == "again"
+            # and max2 is not None:
             if max2 is None:
-                print("max2 is None")
-                break
-            bi_gram = self.hash_table.get(max2.data)  # TODO might have issues here if the word max2 is not a key
+                bi_gram = self.hash_table.get(choose_random_word(self.raw_sentences))
+            else:
+                bi_gram = self.hash_table.get(max2.data)  # TODO might have issues here if the word max2 is not a key
         output = " ".join(output_list)
         self.story.append(output)
-        return max2.data
+        #  return max2.data
 
     # TODO method that writes story to a file, appends the chosen first word to the beginning
 
-    # TODO Builds the entire story consisting of 2000 words.
+    # Builds the entire story consisting of 2000 words.
     def build_new_story(self, first_word):
         next_word = first_word
-        for i in range(167):
-            next_word = self.build_new_sentence(next_word)
+        self.build_new_sentence(next_word)
         # TODO call method to write to Readme.txt
+
+
+# function that picks a random word
+def choose_random_word(sentences: list):
+    limit = len(sentences) - 1
+    random_index = random.randrange(0, limit)
+    sentence = sentences.__getitem__(random_index)
+    words = sentence.split()
+    limit = len(words) - 1
+    random_index = random.randrange(0, limit)
+    return words[random_index]
 
 
 # ---------------Code below is for testing and experimenting-------------------------
@@ -179,3 +200,5 @@ story_teller.train_markov_model(test_list)
 for key in story_teller.hash_table:
     print("The key: ", key, ": ", end=" ")
     print(story_teller.hash_table.get(key).to_string())
+
+choose_random_word(test_list)

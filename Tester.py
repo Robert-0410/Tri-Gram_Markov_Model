@@ -1,10 +1,10 @@
 # Reads input files, connects to Markov.py to generate the output story
 
 
+from Markov import MarkovModel, choose_random_word
+
+
 # Split sentences by period and returns a list with all the sentences
-from Markov import MarkovModel
-
-
 def read_strip_lowercase_lines(file_name: str):
     lines = list()
     novel = open(file_name, 'r')
@@ -96,10 +96,15 @@ def run():
     writer.train_markov_model(novel4)
 
     # Write story to file
-    writer.build_new_story("late")
+    starting_word = choose_random_word(writer.raw_sentences)
+    writer.build_new_story(starting_word)
 
     print(writer.story)
     print(len(writer.story))
+
+    #for key in writer.hash_table:
+     #   print("The key: ", key, ": ", end=" ")
+      #  print(writer.hash_table.get(key).to_string())
 
 # running the program, the proceeding block of code may be held in write_me_a_story_myAI()
 #  sentences = prepare_sentences()
