@@ -20,15 +20,16 @@ class Node:
     def count_word(self):
         self.count += 1
 
+    def reset_count_to_zero(self):
+        self.count = 0
+
     def add_layer2(self):
-        # self.layer2 = LinkedWords()
         setattr(self, "layer2", LinkedWords())
 
 
 # LinkedList for the words in the Tri-gram
 class LinkedWords:
     def __init__(self):
-        # TODO might have a counter to keep track of occurrences
         self.head = None
         self.tail = None
 
@@ -62,6 +63,7 @@ class LinkedWords:
                 output = current
                 max_count = current_count
             current = current.next
+        output.reset_count_to_zero()
         return output
 
     def to_string(self):
@@ -140,33 +142,47 @@ class MarkovModel:
         bi_gram = self.hash_table.get(word)  # the key will come in from the method argument
         output_list = list()
         #  output_list.append(word)
-        for i in range(1000):
-            # if max2 is None:
-            #   print("max2 is None")
-            #  break
+        for i in range(2500):
+            if bi_gram is None:
+                continue
             max1 = bi_gram.search_max()
             tri_gram = max1.layer2
             max2 = tri_gram.search_max()
             output_list.append(max1.data)
             output_list.append(max2.data)
-            output_list.append("_____")
 
-            if max2 == "the" or max2 == "a" or max2 == "his" or max2 == "had" or max2 == "time" or max2 == "again"and max2 is None:
-            #if max2 is None:
-                bi_gram = self.hash_table.get(choose_random_word(self.raw_sentences))
+            if '.' in max2.data:
+                word = choose_random_word(self.raw_sentences)
+                while word is None or '.' in word:
+                    word = choose_random_word(self.raw_sentences)
+                bi_gram = self.hash_table.get(word)
             else:
-                bi_gram = self.hash_table.get(max2.data)  # TODO might have issues here if the word max2 is not a key
+                bi_gram = self.hash_table.get(max2.data)
+
         output = " ".join(output_list)
         self.story.append(output)
-        #  return max2.data
 
-    # TODO method that writes story to a file, appends the chosen first word to the beginning
+    # method that writes story to a file, appends the chosen first word to the beginning
+    def write_down_story(self):
+        file = open("Readme.txt", "w")
+        words_lst = self.story[0].split()
+        print(len(words_lst))
+        amount = 0
+        for word in words_lst:
+            file.write(word)
+            amount += 1
+            if amount >= 12:
+                file.write("\n")
+                amount = 0
+            else:
+                file.write(" ")
+        file.close()
+        return 0
 
     # Builds the entire story consisting of 2000 words.
     def build_new_story(self, first_word):
         next_word = first_word
         self.build_new_sentence(next_word)
-        # TODO call method to write to Readme.txt
 
 
 # function that picks a random word
@@ -176,29 +192,8 @@ def choose_random_word(sentences: list):
     sentence = sentences.__getitem__(random_index)
     words = sentence.split()
     limit = len(words) - 1
-    random_index = random.randrange(0, limit)
+    if limit == 0:
+        return None
+    else:
+        random_index = random.randrange(0, limit)
     return words[random_index]
-
-
-# ---------------Code below is for testing and experimenting-------------------------
-
-
-def test_sentences():
-    s1 = "this is a test sentence from a document"
-    s2 = "an other sentence my friend, an other sentence"
-    s3 = "an other of you will hello young ninja how are you doing also have to leave"
-    s4 = "this quarter an other sentence has an an been rough a rough sentence my ninja"
-    s5 = "but its almost over and i will graduate"
-    output = [s1, s2, s3, s4, s5]
-    return output
-
-
-test_list = test_sentences()
-story_teller = MarkovModel()
-story_teller.train_markov_model(test_list)
-
-for key in story_teller.hash_table:
-    print("The key: ", key, ": ", end=" ")
-    print(story_teller.hash_table.get(key).to_string())
-
-choose_random_word(test_list)

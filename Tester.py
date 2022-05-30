@@ -65,7 +65,8 @@ def clean_punctuation(the_list: list):
 # inspired by: https://www.geeksforgeeks.org/removing-punctuations-given-string/
 def remove_punctuation(sentence: str):
     # Regular expression
-    punctuations = '''!()-[]{};:'"\,<>./?@#$%^&*_~'''
+    punctuations = '''!()-[]{};:'"\,<>/?@#$%^&*_~'''
+    #  punctuations = '''!()-[]{};:'"\,<>./?@#$%^&*_~'''
     for x in sentence.lower():
         if x in punctuations:
             sentence = sentence.replace(x, "")
@@ -98,15 +99,7 @@ def run():
     # Write story to file
     starting_word = choose_random_word(writer.raw_sentences)
     writer.build_new_story(starting_word)
+    writer.write_down_story()
 
-    print(writer.story)
-    print(len(writer.story))
 
-    #for key in writer.hash_table:
-     #   print("The key: ", key, ": ", end=" ")
-      #  print(writer.hash_table.get(key).to_string())
-
-# running the program, the proceeding block of code may be held in write_me_a_story_myAI()
-#  sentences = prepare_sentences()
-#  print(sentences)
 run()
